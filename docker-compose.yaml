@@ -1,0 +1,63 @@
+# version of te docker compose being used
+version: '3'
+
+#the services to be used
+services:
+  app:
+  #the build will be done on the base directory
+    build: .
+    #it will done on the port specified
+    ports: 
+      - "8008:8008"
+    #here we named the volume that the docker container will have
+    volumes:
+      - .:/app
+    #here we performed the command to run the application
+    command: gunicorn exon.wsgi:application --bind 0.0.0.0:8008
+    #we named the image
+    image: application:django
+    #here we named teh docker container's name
+    container_name: exon
+
+    #we downloaded the .env variabnle and added it to our docker container
+    env_file:
+      - ./ /.env
+    # we make sure the application knows that there will be a datbase associated to the application
+    depends_on:
+     - db
+
+  #We defined the iamge fot he postgress iamge that we will be using in the application
+  db:
+    image: postgres:13.10-alphine
+    #we got the env variable that will be used by the postgres database
+    env_file:
+      - ./ /.env
+    #here we opened a port for the database
+    ports:
+      - "5432:5432"
+
+
+
+#we setup the redis image for the docker
+  redis:
+    image: redis:alphine\
+#we setup the celery image to always restart
+  celery:
+    restart: always
+    build:
+      context: .
+    # This is where we run the celery worker to start
+    command: celery -A django_docker worker -l info
+    
+    #we setup the volume
+    volumes:
+      - ./app:/app
+
+    # then we get the env file variables to get the needed variables for the celery to run
+    env_file:
+      - ./ /.env
+    # now we setup the celery for it to depend onf redis, the application and the database
+    depends_on:
+      - db
+      - redis
+      - app
