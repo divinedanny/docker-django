@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from curses.ascii import EM
 from pathlib import Path
 from decouple import config
 
@@ -28,6 +29,12 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
+#email settings
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT", cast=int)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool)
 
 # Application definition
 
@@ -41,6 +48,7 @@ INSTALLED_APPS = [
     
     "rest_framework",
     "main",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -111,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
+# https://docs.djangoproject.com/en/4.2/tospics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -131,3 +139,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#celery settings
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')

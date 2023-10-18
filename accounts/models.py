@@ -28,7 +28,7 @@ class UserManger(BaseUserManager):
         return self.create_user(email, password, firstname, lastname, **other_fields)
         
     
-class User(AbstractBaseUser, PermissionsMixin):
+class UserAccount(AbstractBaseUser, UserManger):
     
     id = models.UUIDField(default=uuid.uuid4,
                           primary_key=True,
@@ -58,13 +58,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         null = False,
         blank=False
     )
-    
     is_active = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     
-    USERNAME_FIELDS = 'email'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['firstname', 'lastname']
     
     objects = UserManger()
@@ -80,8 +79,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     
 class VerifyUserOtp(models.Model):
-    email = models.ForeignKey(User, on_delete=models.SET_NULL)
-    otp = models.CharField(max_length= 255, null=False, blank=False)
+    # id = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    user = models.ForeignKey(
+        UserAccount, related_name="activationtoken", on_delete=models.CASCADE, null=True)
+    otp = models.CharField(_("Token"), max_length=6, null=False, blank=False)
+    # date_issued = models.DateTimeField(auto_now_add=True)
 
 
         
