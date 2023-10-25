@@ -37,7 +37,8 @@ class UserAccount(AbstractBaseUser, UserManger):
                           )
     email = models.EmailField(_('email'), 
                               blank=False, 
-                              null=False
+                              null=False,
+                            unique=True
                               )
     firstname = models.CharField(_('firstname'), 
                                  blank=False, 
@@ -80,8 +81,7 @@ class UserAccount(AbstractBaseUser, UserManger):
     
 class VerifyUserOtp(models.Model):
     # id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    user = models.ForeignKey(
-        UserAccount, related_name="activationtoken", on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(UserAccount, related_name="activationtoken", on_delete=models.CASCADE, null=True)
     otp = models.CharField(_("Token"), max_length=6, null=False, blank=False)
     # date_issued = models.DateTimeField(auto_now_add=True)
 

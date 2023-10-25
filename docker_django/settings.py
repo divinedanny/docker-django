@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from curses.ascii import EM
 from pathlib import Path
 from decouple import config
 
@@ -87,7 +86,7 @@ WSGI_APPLICATION = 'docker_django.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": config("DB_NAME"),
         "USER": config("DB_USER"),
         "PASSWORD": config("DB_PASSWORD"),
@@ -139,6 +138,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'accounts.UserAccount'
+
 
 #celery settings
-CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+# CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+CELERY_BROKER_URL = config('CELERY_LOCAL_BROKER_URL') # for local server
+broker_connection_retry_on_startup = True
+CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://localhost:6379')
+
+
+
+
